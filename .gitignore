@@ -1,0 +1,16 @@
+# Visual Studio / IDE Files
+**/.vs/
+**/*.suo
+**/*.user
+**/*.bak
+
+# Windows Build Files
+**/Debug/
+**/Release/
+**/*.obj
+**/*.exe
+**/*.dll
+
+# Linux/Unix Build Files
+**/*.o
+**/*.so

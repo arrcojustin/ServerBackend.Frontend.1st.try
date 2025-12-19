@@ -72,7 +72,6 @@ add_dependencies(${PROJECT_NAME} g3log_lib)
  if (UNIX)   
     target_link_libraries(${PROJECT_NAME} PRIVATE
         g3log_lib
-        "ws2_32" 
         "m"
         "pthread"
         ${PLATFORM_LIBS}

@@ -2,6 +2,11 @@
 //头文件
 static std::atomic<bool> g_should_exit{ false };
 static int server_sock = -1;
+
+int get_line(int sock, char* buff, int size) {
+	return 0;
+}
+
 #ifdef _WIN32
 BOOL WINAPI ConsoleHandler(DWORD signal) {
 	if (signal == CTRL_C_EVENT || signal == CTRL_CLOSE_EVENT) {
@@ -90,7 +95,12 @@ int startup_win(unsigned short* port) {
 }
 
 DWORD WINAPI accept_request_win(LPVOID arg) {
-	
+	char buff[1024];
+
+	int client = (SOCKET)arg;
+
+	int numchars = get_line(client, buff, sizeof(buff));
+	LOG(INFO) << "读取到数据：" << buff;
 	return 0;
 }
 #endif

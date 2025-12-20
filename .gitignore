@@ -1,3 +1,7 @@
+# ----------------------------------------------------
+# 忽略所有编译和IDE相关文件
+# ----------------------------------------------------
+
 # Visual Studio / IDE Files
 **/.vs/
 **/*.suo
@@ -5,8 +9,8 @@
 **/*.bak
 
 # Windows Build Files
-**/Debug/
-**/Release/
+**/[Dd]ebug/
+**/[Rr]elease/
 **/*.obj
 **/*.exe
 **/*.dll
@@ -14,3 +18,20 @@
 # Linux/Unix Build Files
 **/*.o
 **/*.so
+
+#build
+**/build/
+
+# CMake 额外生成的文件
+**/CMakeCache.txt
+**/CMakeFiles/
+**/CMakeScripts/
+**/cmake_install.cmake
+**/Makefile
+**/compile_commands.json
+
+# 外部库可能生成的临时文件
+**/external/g3log/build/
+
+#Log
+**/log/

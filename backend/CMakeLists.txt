@@ -87,3 +87,7 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${G3LOG_SRC_DIR}
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src  # 确保这里指向 main.h 所在的目录
+)

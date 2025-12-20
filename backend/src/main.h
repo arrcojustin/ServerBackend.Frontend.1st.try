@@ -13,6 +13,7 @@
 #include <g3log/loglevels.hpp>
 #include <g3log/logmessage.hpp>
 
+int get_line(int sock, char* buff, int size);
 #ifdef _WIN32 // WINDOWS环境所需文件
 
 #ifndef WIN32_LEAN_AND_MEAN

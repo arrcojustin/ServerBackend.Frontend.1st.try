@@ -1,0 +1,9 @@
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/crashhandler_windows.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/filesink.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/g3log.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/logcapture.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/loglevels.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/logmessage.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/logworker.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/stacktrace_windows.obj
+G:/CPP+VUE/FirstTry/backend/build/g3log_lib.dir/MinSizeRel/time.obj

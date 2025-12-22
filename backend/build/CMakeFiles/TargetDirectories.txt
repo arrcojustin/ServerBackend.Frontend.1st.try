@@ -1,0 +1,4 @@
+G:/CPP+VUE/FirstTry/backend/build/CMakeFiles/g3log_lib.dir
+G:/CPP+VUE/FirstTry/backend/build/CMakeFiles/BackendServer.dir
+G:/CPP+VUE/FirstTry/backend/build/CMakeFiles/ALL_BUILD.dir
+G:/CPP+VUE/FirstTry/backend/build/CMakeFiles/ZERO_CHECK.dir

@@ -13,7 +13,8 @@
 #include <g3log/loglevels.hpp>
 #include <g3log/logmessage.hpp>
 
-int get_line(int sock, char* buff, int size);
+int GetLine(int sock, char* msg_buffer, int size);
+
 #ifdef _WIN32 // WINDOWS环境所需文件
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -26,11 +27,11 @@ int get_line(int sock, char* buff, int size);
 
 #pragma comment(lib, "WS2_32.lib")
 
-int startup_win(unsigned short port);
+int StartupWin(unsigned short port);
 
 //Windows初始化函数
-#define STARTUP_FUNC(port) startup_win(port)
-#define accept_request accept_request_win
+#define STARTUP_FUNC(port) StartupWin(port)
+#define AcceptRequest AcceptRequestWin
 
 #else // Linux/POSIX Sockets 头文件
 #include <sys/socket.h>
@@ -42,9 +43,9 @@ int startup_win(unsigned short port);
 #include <pthread.h>
 #include <signal.h>
 
-int startup_posix(unsigned short port);
+int StartupPosix(unsigned short port);
 
 // Linux 初始化函数 (通常为空操作)
-#define STARTUP_FUNC(port) startup_posix(port)
-#define accept_request accept_request_posix
+#define STARTUP_FUNC(port) StartupPosix(port)
+#define AcceptRequest AcceptRequestPosix
 #endif

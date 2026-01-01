@@ -3,7 +3,7 @@
 static std::atomic<bool> g_should_exit{ false };
 static int server_sock = -1;
 
-int get_line(int sock, char* buff, int size) {
+int GetLine(int sock, char* msg_buffer, int size) {
 	return 0;
 }
 
@@ -17,7 +17,7 @@ BOOL WINAPI ConsoleHandler(DWORD signal) {
 	}
 	return FALSE;
 }
-int startup_win(unsigned short* port) {
+int StartupWin(unsigned short* port) {
 	LOG(INFO) << "STARTUP_FUNC启动（win）";
 	WSADATA data;
 	int ret = WSAStartup(MAKEWORD(1, 1), &data);
@@ -56,8 +56,8 @@ int startup_win(unsigned short* port) {
 	server_addr.sin_port = htons(*port);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	int binda = bind(server_socket, (const sockaddr*)&server_addr, sizeof(server_addr));
-	if (binda == SOCKET_ERROR) {
+	int bind_ret = bind(server_socket, (const sockaddr*)&server_addr, sizeof(server_addr));
+	if (bind_ret == SOCKET_ERROR) {
 		int ERRO = WSAGetLastError();
 		closesocket(server_socket);
 		WSACleanup();
@@ -80,8 +80,8 @@ int startup_win(unsigned short* port) {
 		LOG(INFO) << "端口已重新分配，为:" << *port;
 	}
 
-	int listena = listen(server_socket, 20);
-	if (listena == SOCKET_ERROR) {
+	int listen_ret = listen(server_socket, 20);
+	if (listen_ret == SOCKET_ERROR) {
 		int ERRO = WSAGetLastError();
 		closesocket(server_socket);
 		WSACleanup();
@@ -94,13 +94,13 @@ int startup_win(unsigned short* port) {
 	return (int)server_socket;
 }
 
-DWORD WINAPI accept_request_win(LPVOID arg) {
-	char buff[1024];
+DWORD WINAPI AcceptRequestWin(LPVOID arg) {
+	char msg_buffer[1024];
 
 	int client = (SOCKET)arg;
 
-	int numchars = get_line(client, buff, sizeof(buff));
-	LOG(INFO) << "读取到数据：" << buff;
+	int read_count = GetLine(client, msg_buffer, sizeof(msg_buffer));
+	LOG(INFO) << "读取到数据：" << msg_buffer;
 	return 0;
 }
 #endif
@@ -113,7 +113,7 @@ void PosixSignalHandler(int signal) {
 		close(server_sock);
 	}
 }
-int startup_posix(unsigned short* port) {
+int StartupPosix(unsigned short* port) {
 	LOG(INFO) << "STARTUP_FUNC启动（linux）";
 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0) {
@@ -137,11 +137,11 @@ int startup_posix(unsigned short* port) {
 	struct sockaddr_in server_addr;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = ntohs(*port);
+	server_addr.sin_port = htons(*port);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	int binda = bind(server_socket, (const sockaddr*)&server_addr, sizeof(server_addr));
-	if (binda < 0) {
+	int bind_ret = bind(server_socket, (const sockaddr*)&server_addr, sizeof(server_addr));
+	if (bind_ret < 0) {
 		LOG(FATAL) << "绑定套接字失败，错误码:" << errno;
 		return -1;
 	}
@@ -159,8 +159,8 @@ int startup_posix(unsigned short* port) {
 		*port = htons(server_addr.sin_port);
 		LOG(INFO) << "端口已重新分配，为:" << *port;
 	}
-	int listena = listen(server_socket, 20);
-	if (listena < 0) {
+	int listen_ret = listen(server_socket, 20);
+	if (listen_ret < 0) {
 		LOG(FATAL) << "监听失败，错误码:" << errno;
 		return 0;
 	}
@@ -169,13 +169,13 @@ int startup_posix(unsigned short* port) {
 	}
 	return (int)server_socket;
 }
-void* accept_request_posix(void* arg) {
+void* AcceptRequestPosix(void* arg) {
 	
 	return NULL;
 }
 #endif
 
-void setup_signal_handlers() {
+void SetupSignalHandlers() {
 #ifdef _WIN32
 	SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 #else
@@ -202,7 +202,7 @@ int main(void) {
 	server_sock = STARTUP_FUNC(&port);
 	LOG(INFO)<< "端口为:" << port;
 	
-	setup_signal_handlers();
+	SetupSignalHandlers();
 	struct sockaddr_in client_addr;
 	int client_addr_size = sizeof(client_addr);
 	//while (TRUE) {
@@ -231,13 +231,13 @@ int main(void) {
 			#endif
 		}
 		#ifdef _WIN32
-		DWORD threadId = 0;
-		CreateThread(0, 0, accept_request, (void*)client_sock, 0, &threadId);
-		//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)accept_request, (LPVOID)client_sock, 0, &threadId);
+		DWORD thread_id = 0;
+		CreateThread(0, 0, AcceptRequest, (void*)client_sock, 0, &thread_id);
+		//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)AcceptRequest, (LPVOID)client_sock, 0, &thread_id);
 		#else
-		pthread_t threadId;
-		pthread_create(&threadId, NULL, accept_request, (void*)client_sock);
-		#endif()
+		pthread_t thread_id;
+		pthread_create(&thread_id, NULL, AcceptRequest, (void*)client_sock);
+		#endif
 	}
 
 	#ifdef _WIN32

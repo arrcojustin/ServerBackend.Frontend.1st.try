@@ -1,0 +1,6 @@
+#ifndef G3LOG_GENERATED_DEFINITIONS_H
+#define G3LOG_GENERATED_DEFINITIONS_H
+
+// 这是一个空配置，用于满足 g3log 编译器在手动集成时的要求。
+
+#endif  // G3LOG_GENERATED_DEFINITIONS_H

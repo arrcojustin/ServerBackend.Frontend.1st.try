@@ -5,7 +5,10 @@
 #include <iostream>
 #include <atomic>
 #include <string>
-#include <algorithm>
+#include <memory>
+#include <vector>
+#include <cstring>
+#include <cstdint>
 
 //g3log¿â
 #include <g3log/g3log.hpp>

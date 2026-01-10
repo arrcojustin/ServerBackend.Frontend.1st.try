@@ -30,9 +30,9 @@ int StartupWin(unsigned short* port) {
 	}
 	int server_socket = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 	if (server_socket < 0) { 
-		int ERRO = WSAGetLastError();
+		int error_backup = WSAGetLastError();
 		WSACleanup();
-		LOG(FATAL) << "套接字未创建成功，错误码:" << ERRO;
+		LOG(FATAL) << "套接字未创建成功，错误码:" << error_backup;
 		return -1;
 	}
 	else {
@@ -41,10 +41,10 @@ int StartupWin(unsigned short* port) {
 	int opt = 1;
 	ret = setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
 	if (ret == SOCKET_ERROR) {
-		int ERRO = WSAGetLastError();
+		int error_backup = WSAGetLastError();
 		closesocket(server_socket);
 		WSACleanup();
-		LOG(FATAL) << "设置 SO_REUSEADDR 失败, 错误码:" << ERRO;
+		LOG(FATAL) << "设置 SO_REUSEADDR 失败, 错误码:" << error_backup;
 		return -1;
 	}
 	else {
@@ -58,19 +58,19 @@ int StartupWin(unsigned short* port) {
 
 	int bind_ret = bind(server_socket, (const sockaddr*)&server_addr, sizeof(server_addr));
 	if (bind_ret == SOCKET_ERROR) {
-		int ERRO = WSAGetLastError();
+		int error_backup = WSAGetLastError();
 		closesocket(server_socket);
 		WSACleanup();
-		LOG(FATAL) << "绑定套接字失败，错误码:" << ERRO;
+		LOG(FATAL) << "绑定套接字失败，错误码:" << error_backup;
 		return -1;
 	}
 	else {
 		LOG(INFO) << "绑定套接字成功";
 	}
 
-	int nameLen = sizeof(server_addr);
+	int name_len = sizeof(server_addr);
 	if (*port == 0) {
-		if (getsockname(server_socket, (struct sockaddr*)&server_addr, &nameLen) < 0) {
+		if (getsockname(server_socket, (struct sockaddr*)&server_addr, &name_len) < 0) {
 			LOG(FATAL) << "端口无法正确分配";
 		}
 		else {
@@ -82,10 +82,10 @@ int StartupWin(unsigned short* port) {
 
 	int listen_ret = listen(server_socket, 20);
 	if (listen_ret == SOCKET_ERROR) {
-		int ERRO = WSAGetLastError();
+		int error_backup = WSAGetLastError();
 		closesocket(server_socket);
 		WSACleanup();
-		LOG(FATAL) << "监听失败，错误码:" << ERRO;
+		LOG(FATAL) << "监听失败，错误码:" << error_backup;
 		return -1;
 	}
 	else {
@@ -126,9 +126,9 @@ int StartupPosix(unsigned short* port) {
 	int opt = 1; 
 	int ret = setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
 	if (ret < 0) { 
-		int ERRO = errno;
+		int error_backup = errno;
 		close(server_socket);
-		LOG(FATAL) << "设置 SO_REUSEADDR 失败，错误码: " << ERRO;
+		LOG(FATAL) << "设置 SO_REUSEADDR 失败，错误码: " << error_backup;
 		return -1;
 	}
 	else {
@@ -149,9 +149,9 @@ int StartupPosix(unsigned short* port) {
 		LOG(INFO) << "绑定套接字失败成功";
 	}
 
-	int nameLen = sizeof(server_addr);
+	int name_len = sizeof(server_addr);
 	if (*port == 0) {
-		if (getsockname(server_socket, (struct sockaddr*)&server_addr, &nameLen) < 0) {
+		if (getsockname(server_socket, (struct sockaddr*)&server_addr, &name_len) < 0) {
 			LOG(FATAL) << "端口无法正确分配";
 		}else {
 			LOG(INFO) << "端口已正确分配";
@@ -198,7 +198,6 @@ int main(void) {
 	g3::initializeLogging(logworker.get());
 	LOG(INFO) << "TEST";
 	unsigned short port = 80;
-	//int server_sock = STARTUP_FUNC(&port);
 	server_sock = STARTUP_FUNC(&port);
 	LOG(INFO)<< "端口为:" << port;
 	
@@ -208,20 +207,14 @@ int main(void) {
 	//while (TRUE) {
 	while (!g_should_exit){
 		int client_sock = accept(server_sock, (struct sockaddr*) & client_addr, &client_addr_size);
-		/*if (client_sock == INVALID_SOCKET) {
-			int ERRO = WSAGetLastError();
-			LOG(WARNING) << "用户IP:"<< inet_ntoa(client_addr.sin_addr) << "失败，错误码:" << ERRO;
-			continue;
-		}
-		*/
 		if (client_sock == INVALID_SOCKET) {
 		#ifdef _WIN32
-			int ERRO = WSAGetLastError();
-			if (g_should_exit || ERRO == WSAEINTR || ERRO == WSAENOTSOCK) {
+			int error_backup = WSAGetLastError();
+			if (g_should_exit || error_backup == WSAEINTR || error_backup == WSAENOTSOCK) {
 				LOG(INFO) << "捕获到套接字关闭信号，退出主循环。";
 				continue;
 			}
-			LOG(WARNING) << "接受连接失败，错误码:" << ERRO;
+			LOG(WARNING) << "接受连接失败，错误码:" << error_backup;
 			#else
 			if (g_should_exit || errno == EINTR || errno == EBADF) {
 				LOG(INFO) << "捕获到套接字关闭信号，退出主循环。";
@@ -233,7 +226,6 @@ int main(void) {
 		#ifdef _WIN32
 		DWORD thread_id = 0;
 		CreateThread(0, 0, AcceptRequest, (void*)client_sock, 0, &thread_id);
-		//CreateThread(0, 0, (LPTHREAD_START_ROUTINE)AcceptRequest, (LPVOID)client_sock, 0, &thread_id);
 		#else
 		pthread_t thread_id;
 		pthread_create(&thread_id, NULL, AcceptRequest, (void*)client_sock);
